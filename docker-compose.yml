@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   web:
@@ -8,10 +8,8 @@ services:
       - ./project/:/usr/src/app/
     ports:
       - 1337:8000
-    environment:
-      - DEBUG=1
-      - SECRET_KEY=dbaa1_i7%*3r9-=z-+_mz4r-!qeed@(-a_r(g@k8jo8y3r27%m
-      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+    env_file:
+      - ./.env
     depends_on:
       - redis
   redis:
@@ -21,20 +19,16 @@ services:
     command: celery -A core worker -l info
     volumes:
       - ./project/:/usr/src/app/
-    environment:
-      - DEBUG=1
-      - SECRET_KEY=dbaa1_i7%*3r9-=z-+_mz4r-!qeed@(-a_r(g@k8jo8y3r27%m
-      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+    env_file:
+      - ./.env
     depends_on:
       - redis
   celery-beat:
     build: ./project
-    command: celery -A core beat -l info
+    command: celery -A core beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
     volumes:
       - ./project/:/usr/src/app/
-    environment:
-      - DEBUG=1
-      - SECRET_KEY=dbaa1_i7%*3r9-=z-+_mz4r-!qeed@(-a_r(g@k8jo8y3r27%m
-      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+    env_file:
+      - ./.env
     depends_on:
       - redis

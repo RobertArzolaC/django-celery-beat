@@ -11,22 +11,15 @@ class TimeStampedModel(models.Model):
         abstract = True
 
 
-class Product(TimeStampedModel):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    title = models.CharField(max_length=200, )
-    description = models.CharField(max_length=500, )
-
-    def __str__(self):
-        return f"Product: {self.title}"
-
-
 class Order(TimeStampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    product = models.ForeignKey(Product, on_delete=models.PROTECT, )
     confirmed_date = models.DateTimeField(null=True, blank=True)
+    price = models.IntegerField(blank=True, null=True)
+    confirmed = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Order: {self.id} - product: {self.product.title}"
+        return f"Order: {self.id}"
 
     class Meta:
         ordering = ["-added"]
+        get_latest_by = "-added"
